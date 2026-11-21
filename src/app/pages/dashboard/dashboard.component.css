@@ -1,0 +1,152 @@
+
+.dashboard-container {
+  padding: 10px;
+}
+
+/* Page Heading */
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-heading h1 {
+  font-size: 27px;
+  color: #FD3753;
+  margin: 0;
+  font-weight: 700;
+}
+
+.page-heading p {
+  color: #64748b;
+}
+
+/* Date */
+.date {
+  background: #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: #333333;
+  border: 1px solid #f5dadd;
+  box-shadow: 0 2px 8px rgba(253, 55, 83, 0.05);
+}
+
+/* Team Grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+/* Team Card */
+.team-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  border-top: 4px solid #FD3753;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(253, 55, 83, 0.12);
+}
+
+.team-card h2 {
+  color: #333333;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.team-card p {
+  color: #64748b;
+}
+
+.team-icon {
+  font-size: 35px;
+}
+
+/* Status */
+.status {
+  display: inline-block;
+  background: #fff0f2;
+  color: #FD3753;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Button */
+.team-card button {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
+  padding: 12px;
+  background: #FD3753;
+  border: none;
+  color: #ffffff;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.team-card button:hover {
+  background: #D92340;
+}
+
+/* Team Details */
+.team-details {
+  margin-top: 25px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #f5dadd;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Logout Button */
+.date-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.top-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #FD3753;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.top-logout-btn:hover {
+  background: #D92340;
+  transform: translateY(-2px);
+}
+

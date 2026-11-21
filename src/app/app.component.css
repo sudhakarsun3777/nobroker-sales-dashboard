@@ -1,0 +1,97 @@
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #FFF1F3;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: #FFF1F3;
+}
+
+.page-content {
+  padding: 25px;
+}
+
+/* Sidebar fixed while scrolling */
+app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* Header area */
+.header-with-logout {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+/* Logout icon above the date */
+.top-logout-btn {
+  position: fixed;
+  top: 112px;
+  right: 38px;
+  z-index: 1000;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #FD3753;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9px;
+
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(253, 55, 83, 0.2);
+  transition: 0.2s ease;
+}
+
+.top-logout-btn:hover {
+  background: #D92340;
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .page-content {
+    padding: 12px;
+  }
+
+  .top-logout-btn {
+    right: 18px;
+    top: 110px;
+  }
+}
+
+.global-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  margin-bottom: 20px;
+  background: #FD3753;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.global-back-btn:hover {
+  background: #D92340;
+  transform: translateX(-3px);
+}

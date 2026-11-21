@@ -40,3 +40,15 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Python backend
+backend/.env
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Environment secrets
+.env
+.env.*
+!.env.example

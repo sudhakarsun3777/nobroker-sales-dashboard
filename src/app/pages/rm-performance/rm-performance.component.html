@@ -1,0 +1,133 @@
+
+<div class="rm-page">
+
+  <div class="page-heading">
+    <div>
+      <h1>{{ team }}</h1>
+      <p>Region: {{ region }} | RM Performance Overview</p>
+    </div>
+    <span class="team-label">NoBroker Sales Team</span>
+  </div>
+
+  <!-- Search and filters -->
+  <div class="filter-section">
+
+    <input
+      type="text"
+      placeholder="Search RM name or Employee ID..."
+      [(ngModel)]="searchText"
+      (ngModelChange)="applyFilters()">
+
+    <input
+      type="month"
+      [(ngModel)]="selectedMonth"
+      (ngModelChange)="applyFilters()">
+
+    <div class="date-filter">
+      <label>From</label>
+      <input type="date"
+        [(ngModel)]="fromDate"
+        (ngModelChange)="applyFilters()">
+    </div>
+
+    <div class="date-filter">
+      <label>To</label>
+      <input type="date"
+        [(ngModel)]="toDate"
+        (ngModelChange)="applyFilters()">
+    </div>
+
+    <button class="clear-btn" (click)="clearFilters()">
+      Clear Filters
+    </button>
+
+  </div>
+
+  <!-- Summary cards -->
+  <div class="summary-grid">
+
+    <div class="summary-card">
+      <span>Total RMs</span>
+      <h2>{{ filteredRMs.length }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Total Visits</span>
+      <h2>{{ totalVisits }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Total Closures</span>
+      <h2>{{ totalClosures }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Gross Revenue</span>
+      <h2>₹{{ totalGrossRevenue | number }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Net Revenue</span>
+      <h2>₹{{ totalNetRevenue | number }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Refund Revenue</span>
+      <h2>₹{{ totalRefunds | number }}</h2>
+    </div>
+
+    <!-- New Schedule Card -->
+    <div class="summary-card">
+      <span>Total Schedules</span>
+      <h2>{{ totalSchedules }}</h2>
+    </div>
+
+  </div>
+
+  <!-- RM table -->
+  <div class="table-section">
+
+    <div class="table-heading">
+      <h2>All Relationship Managers</h2>
+      <span>{{ filteredRMs.length }} records found</span>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>RM Name</th>
+            <th>Visit Date</th>
+            <th>Visits</th>
+            <th>Closures</th>
+            <th>Gross Revenue</th>
+            <th>Net Revenue</th>
+            <th>Refunds</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let rm of filteredRMs">
+            <td>{{ rm.employeeId }}</td>
+            <td><strong>{{ rm.name }}</strong></td>
+            <td>{{ rm.visitDate | date:'dd MMM yyyy' }}</td>
+            <td>{{ rm.visits }}</td>
+            <td>{{ rm.closures }}</td>
+            <td>₹{{ rm.grossRevenue | number }}</td>
+            <td>₹{{ rm.netRevenue | number }}</td>
+            <td class="refund">₹{{ rm.refundRevenue | number }}</td>
+          </tr>
+
+          <tr *ngIf="filteredRMs.length === 0">
+            <td colspan="8" class="empty">
+              No RM records found for the selected filters.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>

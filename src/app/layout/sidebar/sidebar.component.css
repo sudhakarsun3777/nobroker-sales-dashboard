@@ -1,0 +1,81 @@
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #FD3753;
+  color: #ffffff;
+  padding: 25px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 3px 0 12px rgba(253, 55, 83, 0.12);
+}
+
+/* Logo */
+.logo h2 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.logo span {
+  color: #ffe5e9;
+  font-size: 12px;
+}
+
+/* Menu title */
+.menu-title {
+  margin-top: 45px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  color: #ffe5e9;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+}
+
+/* Navigation */
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #ffffff;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+nav a:hover,
+nav a.active {
+  background: #ffffff;
+  color: #FD3753;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 15px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sidebar-footer strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.sidebar-footer span {
+  color: #ffe5e9;
+  font-size: 12px;
+}

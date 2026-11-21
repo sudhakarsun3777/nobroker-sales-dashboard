@@ -1,0 +1,81 @@
+
+<div class="dashboard-container">
+
+  <div class="page-heading">
+    <div>
+      <h1>Sales Dashboard</h1>
+      <p>Welcome to NoBroker Team Performance Dashboard</p>
+    </div>
+
+    <div class="date-actions">
+      <button
+        class="top-logout-btn"
+        (click)="logout()"
+        title="Logout"
+        aria-label="Logout"> Logout
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="team-grid">
+
+    <div class="team-card seller">
+      <div class="team-icon">🏠</div>
+      <h2>Seller Team</h2>
+      <p>Chennai</p>
+      <span class="status">Active Team</span>
+      <button (click)="openTeam('Seller Team', 'Chennai')">
+        View Team →
+      </button>
+    </div>
+
+    <div class="team-card nonsuper">
+      <div class="team-icon">👥</div>
+      <h2>Non-Super Team</h2>
+      <p>Chennai</p>
+      <span class="status">Active Team</span>
+      <button (click)="openTeam('Non-Super Team', 'Chennai')">
+        View Team →
+      </button>
+    </div>
+
+    <div class="team-card postpaid">
+      <div class="team-icon">💳</div>
+      <h2>Postpaid Team</h2>
+      <p>Chennai</p>
+      <span class="status">Active Team</span>
+      <button (click)="openTeam('Postpaid Team', 'Chennai')">
+        View Team →
+      </button>
+    </div>
+
+    <div class="team-card postpaid">
+      <div class="team-icon">💳</div>
+      <h2>Postpaid Team</h2>
+      <p>Bangalore</p>
+      <span class="status">Active Team</span>
+      <button (click)="openTeam('Postpaid Team', 'Bangalore')">
+        View Team →
+      </button>
+    </div>
+
+  </div>
+
+</div>
