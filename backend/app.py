@@ -11,24 +11,38 @@ from dotenv import load_dotenv
 from werkzeug.security import check_password_hash
 
 
-# Load environment variables
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env"))
+# --------------------------------------------------
+# LOAD ENVIRONMENT VARIABLES
+# --------------------------------------------------
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+load_dotenv(
+    dotenv_path=os.path.join(BASE_DIR, ".env")
+)
 
 app = Flask(__name__)
 
 
-# CORS configuration
-# Allows Angular localhost development ports
+# --------------------------------------------------
+# CORS CONFIGURATION
+# --------------------------------------------------
+
+frontend_origin = os.getenv("FRONTEND_ORIGIN", "").strip()
+
+allowed_origins = [
+    r"http://localhost:\d+",
+    r"http://127\.0\.0\.1:\d+"
+]
+
+if frontend_origin:
+    allowed_origins.append(frontend_origin)
+
 CORS(
     app,
     resources={
         r"/api/*": {
-            "origins": [
-                r"http://localhost:\d+",
-                r"http://127\.0\.0\.1:\d+"
-            ],
+            "origins": allowed_origins,
             "methods": ["GET", "POST", "OPTIONS"],
             "allow_headers": [
                 "Content-Type",
@@ -39,41 +53,55 @@ CORS(
 )
 
 
-# MySQL database connection
+# --------------------------------------------------
+# MYSQL DATABASE CONNECTION
+# --------------------------------------------------
+
 def get_db_connection():
+
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME", "nobroker_sales"),
-        port=int(os.getenv("DB_PORT", "3306"))
+        port=int(os.getenv("DB_PORT", "3306")),
+        connection_timeout=10
     )
 
 
-# Home API
+# --------------------------------------------------
+# HOME API
+# --------------------------------------------------
+
 @app.route("/", methods=["GET"])
 def home():
+
     return jsonify({
         "message": "NoBroker Sales Dashboard API is running",
         "status": "success"
-    })
+    }), 200
 
 
-# Database connection test
+# --------------------------------------------------
+# DATABASE CONNECTION TEST
+# --------------------------------------------------
+
 @app.route("/api/test-db", methods=["GET"])
 def test_db():
 
     connection = None
 
     try:
+
         connection = get_db_connection()
 
         return jsonify({
             "status": "success",
-            "message": "MySQL connected"
-        })
+            "message": "MySQL connected successfully"
+        }), 200
 
     except Exception:
+
         app.logger.exception("Database connection failed")
 
         return jsonify({
@@ -82,49 +110,69 @@ def test_db():
         }), 500
 
     finally:
+
         if connection and connection.is_connected():
             connection.close()
 
 
-# Dashboard API
+# --------------------------------------------------
+# DASHBOARD API
+# --------------------------------------------------
+
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
 
     return jsonify({
+
         "company": "NoBroker",
+
         "team_lead": "Arun M",
+
         "teams": [
+
             {
                 "name": "Seller Team",
                 "region": "Chennai"
             },
+
             {
                 "name": "Non-Super Team",
                 "region": "Chennai"
             },
+
             {
                 "name": "Postpaid Team",
                 "region": "Bangalore and Chennai"
             }
+
         ]
-    })
+
+    }), 200
 
 
-# Login API
-@app.route("/api/login", methods=["POST", "OPTIONS"])
+# --------------------------------------------------
+# LOGIN API
+# --------------------------------------------------
+
+@app.route("/api/login", methods=["POST"])
 def login():
-
-    # Handle browser preflight request
-    if request.method == "OPTIONS":
-        return "", 204
 
     data = request.get_json(silent=True) or {}
 
-    email = data.get("email", "").strip().lower()
+    email = data.get("email", "")
+
     password = data.get("password", "")
 
-    # Validate input
+    if not isinstance(email, str) or not isinstance(password, str):
+        return jsonify({
+            "status": "error",
+            "message": "Invalid login input"
+        }), 400
+
+    email = email.strip().lower()
+
     if not email or not password:
+
         return jsonify({
             "status": "error",
             "message": "Email and password are required"
@@ -135,11 +183,10 @@ def login():
 
     try:
 
-        # Connect to MySQL
         connection = get_db_connection()
+
         cursor = connection.cursor(dictionary=True)
 
-        # Find user
         cursor.execute(
             """
             SELECT
@@ -159,27 +206,27 @@ def login():
 
         user = cursor.fetchone()
 
-        # Check user exists and active
         if not user or not user["is_active"]:
+
             return jsonify({
                 "status": "error",
                 "message": "Invalid email or password"
             }), 401
 
-        # Verify password
         if not check_password_hash(
             user["password_hash"],
             password
         ):
+
             return jsonify({
                 "status": "error",
                 "message": "Invalid email or password"
             }), 401
 
-        # JWT secret
         secret = os.getenv("SECRET_KEY")
 
         if not secret:
+
             app.logger.error("SECRET_KEY is missing")
 
             return jsonify({
@@ -187,7 +234,6 @@ def login():
                 "message": "Server authentication configuration is missing"
             }), 500
 
-        # Generate JWT token
         token = jwt.encode(
             {
                 "user_id": user["id"],
@@ -199,19 +245,30 @@ def login():
             algorithm="HS256"
         )
 
-        # Successful login
         return jsonify({
+
             "status": "success",
+
             "message": "Login successful",
+
             "token": token,
+
             "user": {
+
                 "id": user["id"],
+
                 "name": user["name"],
+
                 "email": user["email"],
+
                 "role": user["role"],
+
                 "team": user["team"],
+
                 "region": user["region"]
+
             }
+
         }), 200
 
     except Exception:
@@ -232,11 +289,29 @@ def login():
             connection.close()
 
 
-# Start Flask server
+# --------------------------------------------------
+# HEALTH CHECK API
+# --------------------------------------------------
+
+@app.route("/api/health", methods=["GET"])
+def health():
+
+    return jsonify({
+        "status": "healthy",
+        "service": "NoBroker Sales Dashboard API"
+    }), 200
+
+
+# --------------------------------------------------
+# PRODUCTION SERVER
+# --------------------------------------------------
+
 if __name__ == "__main__":
 
- app.run(
-    host="127.0.0.1",
-    port=5001,
-    debug=True
-)
+    port = int(os.environ.get("PORT", 5001))
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
