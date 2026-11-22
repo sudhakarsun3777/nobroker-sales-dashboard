@@ -1,6 +1,6 @@
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 
 import jwt
 import mysql.connector
@@ -160,7 +160,6 @@ def login():
     data = request.get_json(silent=True) or {}
 
     email = data.get("email", "")
-
     password = data.get("password", "")
 
     if not isinstance(email, str) or not isinstance(password, str):
@@ -256,15 +255,10 @@ def login():
             "user": {
 
                 "id": user["id"],
-
                 "name": user["name"],
-
                 "email": user["email"],
-
                 "role": user["role"],
-
                 "team": user["team"],
-
                 "region": user["region"]
 
             }
@@ -278,6 +272,167 @@ def login():
         return jsonify({
             "status": "error",
             "message": "Unable to process login"
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+# --------------------------------------------------
+# GOOGLE SHEET SYNC API
+# --------------------------------------------------
+
+@app.route("/api/sheets/sync", methods=["POST"])
+def sync_google_sheet():
+
+    # Verify dedicated sync token
+    expected_token = os.getenv("SHEET_SYNC_TOKEN")
+    received_token = request.headers.get("X-Sheet-Token", "")
+
+    if not expected_token:
+        app.logger.error("SHEET_SYNC_TOKEN is missing")
+
+        return jsonify({
+            "status": "error",
+            "message": "Sync configuration missing"
+        }), 500
+
+    if not received_token or received_token != expected_token:
+
+        return jsonify({
+            "status": "error",
+            "message": "Unauthorized"
+        }), 401
+
+    data = request.get_json(silent=True) or {}
+    rows = data.get("rows")
+
+    if not isinstance(rows, list):
+
+        return jsonify({
+            "status": "error",
+            "message": "Rows must be a list"
+        }), 400
+
+    if len(rows) > 500:
+
+        return jsonify({
+            "status": "error",
+            "message": "Maximum 500 rows per request"
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        synced_count = 0
+        skipped_count = 0
+
+        for item in rows:
+
+            if not isinstance(item, dict):
+                skipped_count += 1
+                continue
+
+            lead_id = str(
+                item.get("lead_id") or ""
+            ).strip()
+
+            rm_email = str(
+                item.get("rm_email") or ""
+            ).strip().lower()
+
+            tl_name = str(
+                item.get("tl_name") or ""
+            ).strip()
+
+            visit_status = str(
+                item.get("visit_status") or ""
+            ).strip()
+
+            try:
+                visit_count = int(
+                    item.get("visit_count") or 1
+                )
+            except (ValueError, TypeError):
+                skipped_count += 1
+                continue
+
+            visit_date = item.get("visit_date") or None
+
+            if not lead_id or not rm_email or visit_count < 1:
+                skipped_count += 1
+                continue
+
+            # Accept ISO date: YYYY-MM-DD
+            if visit_date:
+                try:
+                    if isinstance(visit_date, str):
+                        visit_date = date.fromisoformat(
+                            visit_date[:10]
+                        )
+                except ValueError:
+                    skipped_count += 1
+                    continue
+
+            cursor.execute(
+                """
+                INSERT INTO schedules
+                    (
+                        tl_name,
+                        rm_email,
+                        lead_id,
+                        visit_date,
+                        visit_count,
+                        visit_status
+                    )
+                VALUES (%s, %s, %s, %s, %s, %s)
+
+                ON DUPLICATE KEY UPDATE
+                    tl_name = VALUES(tl_name),
+                    visit_date = VALUES(visit_date),
+                    visit_status = VALUES(visit_status)
+                """,
+                (
+                    tl_name,
+                    rm_email,
+                    lead_id,
+                    visit_date,
+                    visit_count,
+                    visit_status
+                )
+            )
+
+            synced_count += 1
+
+        connection.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Google Sheet data synced successfully",
+            "synced_rows": synced_count,
+            "skipped_rows": skipped_count
+        }), 200
+
+    except Exception:
+
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Google Sheet sync failed")
+
+        return jsonify({
+            "status": "error",
+            "message": "Unable to sync Google Sheet data"
         }), 500
 
     finally:
